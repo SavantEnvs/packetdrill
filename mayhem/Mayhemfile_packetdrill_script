@@ -1,0 +1,18 @@
+# Mayhem target `packetdrill-script` — packetdrill's script front end.
+#
+# File-input target: `packetdrill --dry_run <script.pkt>` lexes and parses a .pkt test script
+# (lexer.l/parser.y: timed packets, TCP options, syscalls with their argument expressions, in-script
+# `--option` lines fed back into config parsing) and builds the packets/expressions it describes,
+# then exits without executing anything (no TUN device, no syscalls, no shell/python snippets).
+# Semantic errors call exit(), so this is a CLI target rather than an in-process harness; each
+# input runs in its own process. Plain ASan+UBSan build, like the other raw CLI targets.
+project: savantenvs/packetdrill
+target: packetdrill-script
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/packetdrill-script/testsuite
+
+cmds:
+  - cmd: /mayhem/mayhem/build/fuzz/packetdrill --dry_run @@
+    timeout: 5

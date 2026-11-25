@@ -1,0 +1,16 @@
+# Mayhem target `packet-parser` — packetdrill's raw packet decoder.
+#
+# libFuzzer harness (mayhem/harnesses/fuzz_packet_parser.c): parse_packet() on bytes as they
+# arrive from the wire (byte 0 picks layer 3 IP or layer 2 Ethernet), then packet_to_string() in
+# all three dump formats for every packet that parses.
+project: savantenvs/packetdrill
+target: packet-parser
+
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/packet-parser/testsuite
+
+cmds:
+  - cmd: /mayhem/mayhem/build/fuzz/fuzz_packet_parser
+    libfuzzer: true
+    timeout: 5
